@@ -1,0 +1,48 @@
+Mega play-by-play of my adventures with PowerBI. What a ride.
+
+Day One: Opened PowerBI. 
+Loaded a dataset of Steam information from someones account.
+Ended up in power query... How Jazzy!
+  Identified the important relationships within the data - how much total play time, money spent on games, most played, least played, etc. 
+Structured that data into a dashboard displaying KPIs, Donut Chart, multi-row card, pie chart, cards, and guages.
+Discovered Buttons! Made a page for wins and a second page for a hall of shame - games bought and not played, games with playtime less than an hour.
+Discovered that DAX is infact a thing.
+Showed the owner of the Steam data and fell in love.
+
+
+Day Two: A contract... What?!
+I mentioned that I was going to be learning PowerBI to someone who has clients for whom they'd like to provide the applicable services!
+Met the client and started making connections.
+After being granted permissions to the relevant sharepoint, I loaded the sharepoint data.
+Got a bit scared!
+It was time for data transformation! 
+I learned a couple of DAX codes to standardise data which wasn't consistent or in an ideal format for analysis.
+Created some graphs for fire response times(line), most high risk areas for health and safety issues to occur(pie), and a multi-row card to show how many cases were open, closed, or in need of further investigation.
+
+Day Three: Presentation
+Evolved the visual aesthetic and learned how to 'beautify' the graphs and charts in-line with brand integrity
+Showed it to the client.
+The client wanted more buttons and links.
+I learned how to link to sharepoint pages with the particular and relevant filters being in place.
+
+Day Four: Needs More Buttons! #A_Song_Of_Utility_And_Function
+Created links and buttons which connected to all documents to which the users require quick move access and 'at-a-glance' views.
+Separated the dashboard into pages with easy navigation to account for different departments. 
+Added the company logo and applied the hex codes to match the dashboard to the company_ID.
+
+Day Five: Embed With The Clients
+Embedded the dashboard into sharepoint.
+Presented the dashboard for the second time. 
+Used the PowerBI service to automate timed updates to the dashboard to reflect any changes made to sharepoint data.
+Removed the filter bar which had also ended up visible in the embedded dashboard on sharepoint.
+Changed viewing permissions to public to avoid permission requests. This needs further exploration.
+
+Day Six:
+Learned about using workspaces in PowerBI service to solve the issues of viewing permissions. 
+Realised there is so so much more versatility to the programme and started using Microsoft Learn
+- https://learn.microsoft.com/en-us/power-bi/
+- https://learn.microsoft.com/en-us/powerquery-m/
+- https://learn.microsoft.com/en-us/dax/dax-overview
+
+Day Seven:
+- Got premium PowerBI... Lessssssss GOOOOOOOOO!
