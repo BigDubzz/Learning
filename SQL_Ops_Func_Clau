@@ -1,0 +1,244 @@
+SQL Skills Dictionary
+With Best Practice Examples
+
+A practical reference of operators, functions, and clauses with definitions and examples. 
+Assumes a relational DB like PostgreSQL/MySQL/SQL Serverr
+
+
+--- Comparison Operators ---
+• `=` equal, `<>`/`!=` not equal, `<`, `>`, `<=`, `>=` compare scalar values. less/greater/less-or-equal/more-or-equal.
+• Prefer explicit ranges to ambiguous logic.
+• Use dates with explicit bounds to keep queries SARGable (index friendly).
+
+EX: 
+// Employees hired in 2024 (inclusive bounds):
+  SELECT e.employee_id, e.full_name, e.hire_date
+  FROM employees AS e
+  WHERE e.hire_date >= DATE '2024-01-01'
+    AND e.hire_date < DATE '2025-01-01';
+
+// Orders with high value:
+  SELECT o.order_id, o.total_amount
+  FROM orders AS o
+  WHERE o.total_amount >= 1000;
+
+
+--- Logical Operators (AND, OR, NOT) ---
+• Combine predicates with `AND`/`OR`. Use parentheses for clarity.
+• Avoid `NOT IN (subquery)` with NULLs—prefer `NOT EXISTS`.
+
+EX:
+// UK or US customers over 25:
+  SELECT c.customer_id, c.full_name, c.country, c.age
+  FROM customers AS c
+  WHERE (c.country IN ('UK','USA'))
+    AND c.age > 25;
+
+
+--- Filtering Helpers (IN, BETWEEN, LIKE, IS NULL) ---
+• `IN` for short lists; for long lists consider a lookup table JOIN.
+• `BETWEEN` is inclusive; for dates prefer half■open ranges.
+• Use `LIKE 'abc%'` for prefix matches; avoid leading wildcard `%abc` if you need index use.
+• NULL checks must use `IS NULL` / `IS NOT NULL`.
+
+EX:
+// Customers with specific tier and active account:
+  SELECT c.customer_id, c.full_name
+  FROM customers AS c
+  WHERE c.tier IN ('Gold','Platinum')
+    AND c.deactivated_at IS NULL;
+
+
+--- Sorting (ORDER BY) ---
+• Default is ASC; specify direction explicitly in reports.
+• Order by positional columns is fragile—use names.
+
+EX:
+// Top 10 products by revenue:
+  SELECT p.product_id, p.product_name, SUM(oi.quantity * oi.unit_price) AS revenue
+  FROM order_items AS oi
+  JOIN products AS p ON p.product_id = oi.product_id
+  GROUP BY p.product_id, p.product_name
+  ORDER BY revenue DESC
+  LIMIT 10;
+
+
+--- Aggregates & Grouping (COUNT, SUM, AVG, MIN, MAX, GROUP BY, HAVING) ---
+• Every selected column must be aggregated or listed in GROUP BY.
+• Use `COUNT(*)` for row counts; `COUNT(col)` ignores NULLs.
+• `HAVING` filters after grouping—use `WHERE` for pre■aggregation filters.
+
+EX:
+// Average salary per department with headcount filter:
+  SELECT e.department_id,
+        AVG(e.salary)   AS avg_salary,
+        COUNT(*)        AS headcount
+  FROM employees AS e
+  WHERE e.active = TRUE
+  GROUP BY e.department_id
+  HAVING COUNT(*) >= 5;
+
+
+--- De-duplication (DISTINCT) ---
+• `DISTINCT` removes duplicate rows across the selected columns.
+• Prefer modeling/joins that avoid duplicates; use DISTINCT as a last resort on heavy queries.
+
+EX:
+// Distinct countries with active customers:
+  SELECT DISTINCT c.country
+  FROM customers AS c
+  WHERE c.deactivated_at IS NULL
+  ORDER BY c.country;
+
+
+--- Scalar Functions (text & numeric) ---
+• `UPPER`, `LOWER`, `TRIM`, `REPLACE`, `LENGTH`, `ROUND` for transformations.
+• Avoid wrapping indexed columns in functions in WHERE—transform the parameter instead.
+
+EX:
+// Clean and standardize email for comparison (transform parameter): 
+  -- Good: transform the search value, not the column
+  SELECT u.user_id, u.email
+  FROM users AS u
+  WHERE u.email = LOWER(TRIM(:email_input));
+
+
+--- Date/Time Functions (NOW/GETDATE, DATEADD, DATEDIFF) ---
+• Use UTC in storage when possible; convert in presentation layer.
+• Use half■open ranges for periods (>= start AND < next_period_start).
+
+EX:
+// Orders placed in the last 7 days (rolling window):
+  SELECT o.order_id, o.placed_at
+  FROM orders AS o
+  WHERE o.placed_at >= NOW() - INTERVAL '7 days'
+  ORDER BY o.placed_at DESC;
+
+
+--- Joins (INNER, LEFT, RIGHT, FULL) ---
+• Always join on keys; qualify columns with table aliases.
+• Prefer `INNER JOIN` for required matches; `LEFT JOIN` when the right side is optional.
+
+EX:
+// Customers and their latest order (LEFT JOIN because some may have none):
+  WITH latest AS (
+   SELECT o.customer_id,
+   MAX(o.order_id) AS last_order_id
+   FROM orders AS o
+   GROUP BY o.customer_id
+  )
+  SELECT c.customer_id, c.full_name, o.order_id, o.total_amount
+  FROM customers AS c
+  LEFT JOIN latest AS l ON l.customer_id = c.customer_id
+  LEFT JOIN orders AS o ON o.order_id = l.last_order_id;
+
+
+--- Views ---
+• Views encapsulate logic and improve reuse; keep them simple and index■friendly.
+• Treat views as read■only unless you understand updatability rules in your DBMS.
+
+EX:
+// Create and use a view for active premium customers:
+  CREATE VIEW v_active_premium_customers AS
+  SELECT c.customer_id, c.full_name, c.country
+  FROM customers AS c
+  WHERE c.deactivated_at IS NULL
+   AND c.tier = 'Premium';
+
+// Usage
+  SELECT * FROM v_active_premium_customers WHERE country = 'UK';
+
+
+--- Subqueries & EXISTS ---
+• Use `EXISTS` for semi-joins; it short-circuits and handles NULLs well.
+• Correlate on keys; avoid `SELECT *` in subqueries (it’s ignored, but be explicit).
+
+EX:
+// Customers who have placed at least one order (EXISTS):
+  SELECT c.customer_id, c.full_name
+  FROM customers AS c
+  WHERE EXISTS (
+     SELECT 1
+     FROM orders AS o
+     WHERE o.customer_id = c.customer_id
+  );
+
+--- Data Modification (INSERT, UPDATE, DELETE) ---
+• Always specify column lists in INSERT.
+• Wrap multi■statement changes in transactions.
+• Always include a precise WHERE in UPDATE/DELETE; preview the target rows first.
+
+EX:
+// Insert with explicit columns:
+  INSERT INTO departments (department_id, department_name)
+  VALUES (:id, :name);
+// Safe update (preview first), then apply within a transaction:
+-- Preview
+  SELECT e.employee_id, e.salary
+  FROM employees AS e
+  WHERE e.department_id = :dept_id;
+-- Apply
+  BEGIN TRANSACTION;
+  UPDATE employees
+  SET salary = salary * 1.05
+  WHERE department_id = :dept_id;
+  COMMIT;
+// Delete orphaned child rows with referential awareness:
+  DELETE FROM order_items AS oi
+  WHERE NOT EXISTS (
+    SELECT 1 FROM orders AS o WHERE o.order_id = oi.order_id
+  );
+
+
+--- Constraints (PRIMARY KEY, FOREIGN KEY, UNIQUE, NOT NULL, CHECK, DEFAULT) ---
+• Define constraints in DDL to enforce data integrity at the database level.
+• Name constraints for clarity (DBA■friendly).
+
+EX:
+// Table with well-named constraints:
+  CREATE TABLE users (
+   user_id BIGINT PRIMARY KEY,
+   email VARCHAR(255) NOT NULL CONSTRAINT uq_users_email UNIQUE,
+   full_name VARCHAR(200) NOT NULL,
+   status VARCHAR(20) NOT NULL DEFAULT 'active',
+   created_at TIMESTAMP NOT NULL DEFAULT NOW(),
+   CONSTRAINT ck_users_status CHECK (status IN ('active','inactive','blocked'))
+  );
+
+
+--- Transactions (BEGIN / COMMIT / ROLLBACK) ---
+• Group related changes; handle errors by rolling back.
+• Keep transactions short to minimize locking.
+
+EX:
+// Transfer funds pattern:
+  BEGIN TRANSACTION;
+  UPDATE accounts SET balance = balance - :amount WHERE account_id = :from_id;
+  UPDATE accounts SET balance = balance + :amount WHERE account_id = :to_id;
+-- Optional: check invariant
+-- SELECT ... ensure balances are non-negative, etc.
+COMMIT;
+/* If any step fails, issue ROLLBACK */
+
+
+--- Control Flow (CASE, IF, loops) ---
+• `CASE` for computed columns inside SELECT.
+• Use procedural IF/loops only in stored procedures where supported.
+
+EX:
+// Bucket salaries using CASE:
+  SELECT e.employee_id,
+         CASE
+         WHEN e.salary >= 80000 THEN 'High'
+         WHEN e.salary >= 40000 THEN 'Medium'
+         ELSE 'Low'
+     END AS salary_band
+  FROM employees AS e;
+
+
+--- General Best Practices ---
+• Prefer explicit column lists; avoid `SELECT *`.
+• Use short, meaningful table aliases and qualify columns.
+• Keep predicates SARGable (avoid wrapping indexed columns in functions).
+• Use parameterized queries from applications to prevent SQL injection.
+• Consistent naming: snake_case for identifiers; singular table names are common in OLTP.
