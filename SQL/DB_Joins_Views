@@ -1,0 +1,13 @@
+CFG Kick Starter Course - Data Analytics
+
+
+Types of DB relationships
+one to one - how one row in one table is linked to another row in another table. 1:1 relationship linked with a verticle line perpendicular to the relationships line. implemented using a uniquer foreign key in on table that references the primary key of another table. 
+one to many - perpendicular line then crows foot. a customer and their orders. 
+many to many - crows feet at both ends. create a junction table with forgein keys that reference the primary keys of both tables, this manages the association between tables. students and courses where each student can enrol in many classes and each class could have many students.
+
+normalizing data... ahhh, it's like transforming in power query but SQL stylee. I think thats enough for now. 
+
+Joins... 
+
+
