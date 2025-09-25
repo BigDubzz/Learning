@@ -1,0 +1,70 @@
+SQL Practice, Table Management
+
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Key Learning:
+
+Adding data to tables
+
+INSERT INTO - add data or additional rows - follow with table name to be edited, specify the columns to be edited in brackets (name, id, class, etc) match to table
+VALUES - specifies the data to be input into the new row - put the values in the corresponding order to the specifications in the brackets (name, id, class, etc) 
+DELETE FROM - delete data in a table - always specify the WHERE (conditions) or you may delete all of the data by not specifying from where the delete should happen
+UPDATE - update the information in a table. More elegant than using DELETE and then INSERT INTO. use UPDATE followed by table name you wish to update. Specify a WHERE to change targeted input.
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+INSERT INTO orders(name, id, price)
+VALUES("Teddy bear", 0503, 23);
+
+SELECT * FROM orders; 
+-- adds the name, id, and price to a table with the values teddy bear (name) 0503 (id) and 23 (price) and then displays the table with all info from all orders.
+
+DELETE FROM orders 
+WHERE price < 10;
+
+SELECT * FROM orders;
+-- deletes all orders with a price less than 10 from the orders table then displays remaining orders.
+
+INSERT INTO users(name, id, password)
+VALUES("Tony Hawkes", 31899, "topgame90s");
+-- inserts Tony Hawkes name, id, and password into the table.
+
+DELETE FROM users
+WHERE id = 31899;
+-- Deletes Tony Hawkes from the users table on the basis of his id number.
+
+DELETE FROM users
+WHERE name = "Tony Hawkes";
+-- Deletes Tony Hawkes from the users table on the basis of his name.
+
+UPDATE Reservations SET time = '19:00'
+WHERE name = 'Fred Flintstone';
+
+SELECT * FROM Reservations;
+-- Updates Fred Flintstones reservation to 19:00 in the Reservations table.
+
+UPDATE Directory SET company = 'FTT';
+
+SELECT * FROM Directory;
+-- Update and set a specified value to a column in your table then display updated table. would change all inputs in the company column to FTT.
+
+UPDATE Directory SET company = 'FTT'
+WHERE floor = 3;
+SELECT * FROM Directory;
+-- Update and set a specified value to a column in your table then display updated table. would change all inputs in the company column to FTT where the listed floor is 3.
+
+UPDATE flights
+SET mealsrvice = True
+WHERE duration >= 6;
+
+SELECT * FROM flights;
+-- populates for all flights equal to or greater than 6 duration to come with mealservice. Displays updated table.
+
+UPDATE Reservations SET partysize = 2
+WHERE name = 'Fred Flintstone';
+
+SELECT * FROM Reservations; 
+-- Updates Fred Flintstones reservation to account for 2 guests. Shows the change in the table Reservations with amended partysize.
+
+
+
+
+
