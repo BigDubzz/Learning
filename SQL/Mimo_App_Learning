@@ -1,4 +1,143 @@
 Mimo is an app for learning coding languages. I have mine set to SQL.
-This is a list of practice codes I wrote to strengthen code reading and writing while getting used to the functions of SQL.
+This is a list of practice codes I wrote to strengthen code reading and writing while getting used to the basic functions of SQL.
 
+-------------------------------------------------------------------------------------------------------------------------------------
+Key Learning:
 
+= equal to
+<= or >= less than and equal to OR more than and equal to
+< or > less than OR more than
+* all
+SELECT - choose the metrics you're looking at.
+FROM - from which dataset/table.
+WHERE - apply conditions.
+DISTINCT - forego repeated data categories/types - remove duplications.
+-------------------------------------------------------------------------------------------------------------------------------------
+
+SELECT name, type, email
+FROM membership
+WHERE type = 'pro';
+-- Selects name, type, and email address from the membership table where the membership type is pro. 
+
+SELECT *
+FROM schools
+WHERE type = 'private';
+-- selects all from the schools table where the school type is private.
+
+SELECT *
+FROM grades
+WHERE type = 4;
+-- selects all from the grades table where the grade type equals 4
+
+SELECT *
+FROM cereals;
+-- selects all from the cereals table
+
+SELECT * 
+FROM race;
+-- selects all information from a table based on race
+
+SELECT DISTINCT platform
+FROM games;
+-- selects games based on platform but will only list each platform once
+
+SELECT name 
+FROM students 
+ORDER BY score DESC; 
+-- selects students and lists them according to their scores in descending order
+
+SELECT * 
+FROM books
+ORDER BY author;
+-- selects books and orders them by author 
+
+SELECT *
+FROM books
+WHERE genre = 'fiction';
+-- selects books which are fiction
+
+SELECT title
+FROM books
+WHERE year = 2011
+ORDER BY author;
+-- selects the titles from books which were published in 2011 and orders them by author in asc order
+
+SELECT title, year
+FROM books
+WHERE genre = 'non-fiction'; 
+-- selects the title and year from books which are non-fiction
+
+SELECT *
+FROM students 
+WHERE year <> 1; 
+-- selects data which doesnt meet a condition - all students who are not in year one. 
+
+SELECT * 
+FROM students
+WHERE major <> 'biology';
+-- selects all entries where students are not studying biology
+
+SELECT *
+FROM companies
+WHERE years_active <> 3;
+-- selects all from the companies table where the companies have not been active for 3 years. Will still show less than and more than 3. 
+
+SELECT *
+FROM companies
+WHERE years_active <> 1, 2, 3;
+-- selects all from the companies table where the companies have not been active for less than 3 years.
+
+SELECT * 
+FROM companies
+WHERE years_active <> <3; 
+-- selects all from the companies table where the companies have not been active for less than 3 years. 
+
+SELECT *
+FROM chocolate
+WHERE price < 2;
+-- select all from chocolate table where the price is less than 2. 2 is not less than 2 so anything 2+ will not show. 
+
+SELECT *
+FROM chocolate
+WHERE price <= 2;
+-- This modification to the operator shows values of chocolate below and equal to 2.
+
+SELECT city
+FROM pollution
+WHERE pollution_index < 80;
+-- Selects the cities where the pollution_index value is less than 80. Use <= to include those with a PI of 80 and under. 
+
+SELECT *
+FROM pollution
+WHERE pollution_index < 72; 
+-- selects all info from the pollution table where PI is less than 72.
+
+SELECT * 
+FROM chocolate
+WHERE price > 2;
+-- selects all chocolates where the price is higher than two. Use the operator >= to get all prices higher than 2 and including 2.
+
+SELECT name AS oldest
+FROM mario_games
+WHERE release = 1983;
+-- selects the name of the game released in 1983 and shows it as 'oldest' (alias) from the mario_games table. Alias does not change the original table.
+
+SELECT name AS newest, release
+FROM mario_games
+WHERE release = 2013;
+-- selects the name and gives alias "newest" and selects release column from the mario_games table where the release year is 2013.
+
+SELECT name AS newest, release AS year
+FROM mario_games
+WHERE release = 2013;
+-- selects the name and gives alias "newest" and selects release column with the name "year" from the mario_games table where the release year is 2013.
+
+Select * 
+FROM flights
+WHERE daily <> 1; 
+-- selects all info for flights which are not once a day. 
+
+SELECT daily
+FROM flights
+WHERE destination <> 'Paris';
+-- selects the daily column from flights table where the destination is not Paris. 
